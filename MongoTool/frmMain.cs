@@ -17,7 +17,7 @@ namespace MongoTool
         private void btnConnect_Click(object sender, EventArgs e)
         {
             var server = tbServer.Text;
-            _mongoStuff = new MongoTool.MongoStuff(server);
+            _mongoStuff = new MongoStuff(server);
             cbDatabase.DataSource = _mongoStuff.GetDatabaseNames();
         }
 
@@ -28,9 +28,7 @@ namespace MongoTool
 
         private void cbCollection_SelectedIndexChanged(object sender, EventArgs e)
         {
-            lbRecords.DataSource = null;
-            lbRecords.Items.Clear();
-            lbRecords.DataSource = _mongoStuff.GetDocumentsForCollection(cbDatabase.Text, cbCollection.Text).ToList();
+            RefreshList();
         }
 
         private void lbRecords_SelectedIndexChanged(object sender, EventArgs e)
@@ -45,7 +43,17 @@ namespace MongoTool
 
         private void btnDeleteRecord_Click(object sender, EventArgs e)
         {
-            _mongoStuff.DeleteDocument(cbDatabase.SelectedText, cbCollection.SelectedText, lbRecords.SelectedItem.ToString());
+            var selectedIndex = lbRecords.SelectedIndex;
+
+            _mongoStuff.DeleteDocument(cbDatabase.Text, cbCollection.Text, lbRecords.SelectedItem.ToString());
+
+            lbRecords.Items.RemoveAt(selectedIndex);
+
+            if (selectedIndex >= lbRecords.Items.Count)
+                selectedIndex = lbRecords.Items.Count - 1;
+            
+            if(selectedIndex >= 0)
+                lbRecords.SelectedIndex = selectedIndex;
         }
 
         private void btnDeleteCollection_Click(object sender, EventArgs e)
@@ -58,6 +66,22 @@ namespace MongoTool
         {
             _mongoStuff.DeleteDatabase(cbDatabase.Text);
             btnConnect_Click(null, null);
+        }
+
+        private void btnRefresh_Click(object sender, EventArgs e)
+        {
+            RefreshList();
+        }
+
+        private void RefreshList()
+        {
+            lbRecords.DataSource = null;
+            lbRecords.Items.Clear();
+
+            var documents = _mongoStuff.GetDocumentsForCollection(cbDatabase.Text, cbCollection.Text).ToList();
+
+            foreach (var doc in documents)
+                lbRecords.Items.Add(doc);
         }
     }
 }
