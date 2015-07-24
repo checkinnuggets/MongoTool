@@ -43,6 +43,9 @@ namespace MongoTool
 
         private void btnDeleteRecord_Click(object sender, EventArgs e)
         {
+            if (lbRecords.SelectedItem == null)
+                return;
+
             var selectedIndex = lbRecords.SelectedIndex;
 
             _mongoStuff.DeleteDocument(cbDatabase.Text, cbCollection.Text, lbRecords.SelectedItem.ToString());

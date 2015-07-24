@@ -67,8 +67,12 @@ namespace MongoTool
                 .GetDatabase(databaseName)
                 .GetCollection(collectionName);
 
-            //collection.Remove(Query.EQ("_id", BsonValue.Create(documentId)));
-            collection.Remove(Query.EQ("_id", ObjectId.Parse(documentId)));
+            
+            ObjectId objectId;
+            if( ObjectId.TryParse(documentId, out objectId ) )
+                collection.Remove(Query.EQ("_id", objectId));
+            
+            collection.Remove(Query.EQ("_id", BsonValue.Create(documentId)));    
         }
 
         public string GetDocument(string databaseName, string collectionName, string documentId)
