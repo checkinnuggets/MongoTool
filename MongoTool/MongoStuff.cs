@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -83,10 +84,17 @@ namespace MongoTool
                 .GetDatabase(databaseName)
                 .GetCollection(collectionName);
 
-            var document = collection.FindOneById(BsonValue.Create(documentId)) ??
-                         collection.FindOneById(ObjectId.Parse(documentId));
+            BsonDocument document = null;
+            ObjectId objectId;
 
-            return document.ToJson();
+            if( ObjectId.TryParse(documentId, out objectId) )
+                document = collection.FindOneById(objectId);
+
+            
+            if (document == null)
+                document = collection.FindOneById(BsonValue.Create(documentId));
+            
+            return document == null ? string.Empty : document.ToJson();
         }
 
         public void DeleteDatabase(string databaseName)
