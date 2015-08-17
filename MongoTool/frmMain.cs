@@ -48,40 +48,17 @@ namespace MongoTool
                     .FormatJson();
         }
 
-<<<<<<< HEAD
-=======
-
-        private void btnDeleteRecord_Click(object sender, EventArgs e)
-        {
-            if (lbRecords.SelectedItem == null)
-                return;
-
-            var selectedIndex = lbRecords.SelectedIndex;
-
-            _mongoStuff.DeleteDocument(cbDatabase.Text, cbCollection.Text, lbRecords.SelectedItem.ToString());
-
-            lbRecords.Items.RemoveAt(selectedIndex);
-
-            if (selectedIndex >= lbRecords.Items.Count)
-                selectedIndex = lbRecords.Items.Count - 1;
-            
-            if(selectedIndex >= 0)
-                lbRecords.SelectedIndex = selectedIndex;
-        }
-
->>>>>>> origin/master
-        private void btnDeleteCollection_Click(object sender, EventArgs e)
-        {
-            _mongoStuff.DeleteCollection(cbDatabase.Text, cbCollection.Text);
-            btnConnect_Click(null, null);
-        }
-
         private void btnDeleteDatabase_Click(object sender, EventArgs e)
         {
             _mongoStuff.DeleteDatabase(cbDatabase.Text);
             btnConnect_Click(null, null);
         }
 
+        private void btnDeleteCollection_Click(object sender, EventArgs e)
+        {
+            _mongoStuff.DeleteCollection(cbDatabase.Text, cbCollection.Text);
+            btnConnect_Click(null, null);
+        }
 
         private void RefreshList()
         {
@@ -148,9 +125,7 @@ namespace MongoTool
         }
 
         private const string FileDialogFilter = @"JSON|*.json|All Files|*.*";
+
     }
-
-
-
 
 }

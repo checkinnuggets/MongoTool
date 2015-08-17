@@ -88,18 +88,10 @@ namespace MongoTool
 
             BsonDocument document = null;
             ObjectId objectId;
-<<<<<<< HEAD
 
             if( ObjectId.TryParse(documentId, out objectId) )
                 document = collection.FindOneById(objectId);
 
-=======
-
-            if( ObjectId.TryParse(documentId, out objectId) )
-                document = collection.FindOneById(objectId);
-
->>>>>>> origin/master
-            
             if (document == null)
                 document = collection.FindOneById(BsonValue.Create(documentId));
             
