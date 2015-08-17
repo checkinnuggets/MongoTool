@@ -1,4 +1,5 @@
-﻿using System.Collections.Generic;
+﻿using System;
+using System.Collections.Generic;
 using System.Linq;
 using MongoDB.Bson;
 using MongoDB.Driver;
@@ -14,7 +15,9 @@ namespace MongoTool
         void DeleteCollection(string databaseName, string collectionName);
         void DeleteDatabase(string databaseName);
         string GetDocument(string databaseName, string collectionName, string documentId);
-        void DeleteDocument(string databaseName, string collectionName, string documentId);               
+        void DeleteDocument(string databaseName, string collectionName, string documentId);
+
+        void InsertRecord(string databaseName, string collectionName, string json);
     }
 
     public class MongoStuff : IMongoStuff
@@ -67,8 +70,12 @@ namespace MongoTool
                 .GetDatabase(databaseName)
                 .GetCollection(collectionName);
 
-            //collection.Remove(Query.EQ("_id", BsonValue.Create(documentId)));
-            collection.Remove(Query.EQ("_id", ObjectId.Parse(documentId)));
+            
+            ObjectId objectId;
+            if( ObjectId.TryParse(documentId, out objectId ) )
+                collection.Remove(Query.EQ("_id", objectId));
+            
+            collection.Remove(Query.EQ("_id", BsonValue.Create(documentId)));    
         }
 
         public string GetDocument(string databaseName, string collectionName, string documentId)
@@ -79,15 +86,32 @@ namespace MongoTool
                 .GetDatabase(databaseName)
                 .GetCollection(collectionName);
 
-            var document = collection.FindOneById(BsonValue.Create(documentId)) ??
-                         collection.FindOneById(ObjectId.Parse(documentId));
+            BsonDocument document = null;
+            ObjectId objectId;
 
-            return document.ToJson();
+            if( ObjectId.TryParse(documentId, out objectId) )
+                document = collection.FindOneById(objectId);
+
+            
+            if (document == null)
+                document = collection.FindOneById(BsonValue.Create(documentId));
+            
+            return document == null ? string.Empty : document.ToJson();
         }
 
         public void DeleteDatabase(string databaseName)
         {
             _client.GetServer().DropDatabase(databaseName);
+        }
+
+
+        public void InsertRecord(string databaseName, string collectionName, string json)
+        {
+            var collection = _client.GetServer().GetDatabase(databaseName).GetCollection(collectionName);
+
+            var document = MongoDB.Bson.Serialization.BsonSerializer.Deserialize<BsonDocument>(json);
+
+            collection.Insert(document);
         }
     }
 }

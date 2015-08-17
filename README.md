@@ -3,7 +3,7 @@ Very Simple Windows GUI Tool for Mongo DB
 
 You know when you write pages of technical justification to demonstrate why MongoDB is the right choice, then you get to use it, but then you can't get a $99 MongoChef license.  That.
 
-RoboMongo is great doesn't seem to support WiredTiger.
+RoboMongo is great but doesn't seem to support WiredTiger.
 
 I knocked this up in about an hour as a proof of concept to prove it is as easy as I thought it would be - at least to implement the very simple subset of features that I require.
 
